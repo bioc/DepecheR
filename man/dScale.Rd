@@ -42,8 +42,7 @@ Three possible values: TRUE, FALSE, and a vector with two values indicating
 the low and high threshold quantiles for truncation.}
 
 \item{multiplicationFactor}{A value that all values will be multiplied with.
-Useful e.g. if the results preferrably should be returned as percent.
-Defaults to FALSE.}
+Useful e.g. if the results preferrably should be returned as percent.}
 
 \item{returnCenter}{Boolean. If center=TRUE, should the value at the center
 be returned?}

@@ -32,7 +32,6 @@
 #' increase is generally seen above 10 cores for normal computers to date.
 #' @param multiplicationFactor A value that all values will be multiplied with.
 #' Useful e.g. if the results preferrably should be returned as percent.
-#' Defaults to FALSE.
 #' @param returnCenter Boolean. If center=TRUE, should the value at the center
 #' be returned?
 #' @return A vector or dataframe with the same size but where all values in the
@@ -80,7 +79,7 @@ dScale <- function(x, control, scale = TRUE, robustVarScale = TRUE,
     if (is.numeric(x) == FALSE &&
         is.integer(x) == FALSE &&
         is.data.frame(x) == FALSE) {
-        stop("The data is incorrectly formatted, as it is not a numeric vector, 
+        stop("The data is incorrectly formatted, as it is not a numeric vector,
              a matrix or a dataframe. Change this and try again.")
     }
 

@@ -1,3 +1,6 @@
+Changes in version 1.19.10 (2024-03-14)
++ Correction of the number of used neighbors in neighSmooth function.
+
 Changes in version 1.19.9 (2024-01-15)
 + Bug fixes
 

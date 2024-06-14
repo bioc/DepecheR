@@ -20,14 +20,20 @@
 #' fast.prcomp from gmodels. So in cases where this function is used iteratively,
 #' it might be wiser to run the PCA beforehand.
 #' @param neighRows The rows in the dataset that correspond to the neighbors
-#' of the focusData points. This can be all the focusData points, or a subset,
-#' depending on the setup.
+#' of the focusData points. "default" is all the focusData points, but a subset
+#' can be added instead, if preferred. This is good to use to increase
+#' robustness, e.g. by running 100 iterations with different sets of neighbors
+#' with the same number of points from each group/individual.
 #' @param ctrlRows Optionally, a set of control rows that are used to remove
 #' background signal from the neighRows data before sending the data back.
-#' @param kNeighK The number of nearest neighbors.
+#' @param kNeighK The number of nearest neighbors. "default" is the max of
+#' 100 and the number of neighbor rows divided by 10000. Mutliple different
+#' values here is preferred.
 #' @param kMeansK The number of clusters in the initial step of the algorithm.
 #' A higher number leads to shorter runtime, but potentially lower accuracy.
-#' This is not used if kMeansCenters is provided
+#' This is not used if kMeansCenters is provided. Default is either 1 or
+#' the number of cells in euclidSpaceData divided by 1000, depending on what is
+#' highest.
 #' @param kMeansCenters Here, a pre-clustering of the data can be provided, in
 #' which case the clustering will not be performed internally. Wise if for
 #' example a bootstrapping scheme is used to define the neighRows iteratively,
@@ -62,13 +68,10 @@
 #' }
 #' @export neighSmooth
 neighSmooth <- function(focusData, euclidSpaceData,
-                        neighRows = seq_len(nrow(as.matrix(focusData))),
-                        ctrlRows, kNeighK = max(100, round(nrow(
-                            as.matrix(euclidSpaceData)
-                        ) / 10000)),
-                        kMeansK = max(1, round(nrow(
-                            as.matrix(euclidSpaceData)
-                        ) / 1000)),
+                        neighRows = "default",
+                        ctrlRows = NULL,
+                        kNeighK = "default",
+                        kMeansK = "default",
                         kMeansCenters = NULL,
                         kMeansClusters = NULL,
                         method = "mean",
@@ -91,6 +94,17 @@ neighSmooth <- function(focusData, euclidSpaceData,
         dataRedDim <- fast.prcomp(euclidSpaceData)$x[, seq(1, 10)]
     } else {
         dataRedDim <- euclidSpaceData
+    }
+    if(neighRows == "default"){
+        neighRows <- seq_len(nrow(as.matrix(focusData)))
+    }
+    if(kNeighK == "default"){
+        kNeighK <- max(100,round(nrow(as.matrix(focusData))/10000))
+    }
+    if(kMeansK == "default"){
+        kMeansK <- max(1, round(nrow(
+            as.matrix(euclidSpaceData)
+        ) / 1000))
     }
     # Now, the cells are clustered according to this analysis
     if(is.null(kMeansCenters) |
@@ -115,7 +129,6 @@ neighSmooth <- function(focusData, euclidSpaceData,
     dataRedDimClustList <- split(as.data.frame(dataRedDim), kMeansClusters)
     groupVecClustList <- split(groupVec, kMeansClusters)
     rowNumList <- split(rowNumbers, kMeansClusters)
-    # clusterIds <- split(kMeansClustersData, kMeansClustersData)
 
     if (nrow(kMeansCenters) > 11) {
         distCenters <- as.list(as.data.frame(
