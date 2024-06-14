@@ -43,9 +43,8 @@ values here is preferred.}
 
 \item{kMeansK}{The number of clusters in the initial step of the algorithm.
 A higher number leads to shorter runtime, but potentially lower accuracy.
-This is not used if kMeansCenters is provided. Default is either 1 or
-the number of cells in euclidSpaceData divided by 1000, depending on what is
-highest.}
+This is not used if kMeansCenters is provided. "default" is the highest of 1
+and the number of cells in euclidSpaceData divided by 1000.}
 
 \item{kMeansCenters}{Here, a pre-clustering of the data can be provided, in
 which case the clustering will not be performed internally. Wise if for

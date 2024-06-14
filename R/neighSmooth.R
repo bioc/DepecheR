@@ -31,9 +31,8 @@
 #' values here is preferred.
 #' @param kMeansK The number of clusters in the initial step of the algorithm.
 #' A higher number leads to shorter runtime, but potentially lower accuracy.
-#' This is not used if kMeansCenters is provided. Default is either 1 or
-#' the number of cells in euclidSpaceData divided by 1000, depending on what is
-#' highest.
+#' This is not used if kMeansCenters is provided. "default" is the highest of 1
+#' and the number of cells in euclidSpaceData divided by 1000.
 #' @param kMeansCenters Here, a pre-clustering of the data can be provided, in
 #' which case the clustering will not be performed internally. Wise if for
 #' example a bootstrapping scheme is used to define the neighRows iteratively,
@@ -95,24 +94,34 @@ neighSmooth <- function(focusData, euclidSpaceData,
     } else {
         dataRedDim <- euclidSpaceData
     }
-    if(neighRows == "default"){
+    if(is.character(neighRows) && neighRows == "default"){
         neighRows <- seq_len(nrow(as.matrix(focusData)))
+        message("All events will be used as potential neighbors")
     }
-    if(kNeighK == "default"){
+    if(is.character(kNeighK) && kNeighK == "default"){
         kNeighK <- max(100,round(nrow(as.matrix(focusData))/10000))
+        message("The number of neighbors will be ", kNeighK)
     }
-    if(kMeansK == "default"){
+
+    if(is.character(kMeansK) && kMeansK == "default" &&
+       is.null(kMeansCenters)){
         kMeansK <- max(1, round(nrow(
             as.matrix(euclidSpaceData)
         ) / 1000))
+        message("The number of k-means centers will be ", kMeansK)
     }
+
     # Now, the cells are clustered according to this analysis
-    if(is.null(kMeansCenters) |
-       is.null(kMeansClusters)){
+    if(all(is.null(kMeansCenters) |
+       is.null(kMeansClusters))){
         kMeansResult <- KMeans_rcpp(dataRedDim, kMeansK, max_iters = 100)
         kMeansCenters <- kMeansResult$centroids
         kMeansClusters <- kMeansResult$clusters
-        print("Done with k-means")
+        message("Done with k-means")
+    } else if(any(is.null(kMeansCenters) |
+                  is.null(kMeansClusters))){
+        message("Illogical input. Please provide both kMeansCenters ",
+                "and kMeansClusters or else they will not be used")
     }
 
     # Here, the rows connected to the neighbors, the control neighbors or
