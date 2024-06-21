@@ -244,14 +244,33 @@ depeche <- function(inDataFrame, samplingSubset = seq_len(nrow(inDataFrame)),
     for (i in seq_len(nClust)) {
         localNum <- clusterSizeNums[i]
         clusterVectorNewNums[clusterVector == localNum] <- newNums[i]
+        #A ridiculous value is added here to make sure that the row names stay
+        #unique.
         row.names(reducedClusterCenters)[sortedClustSizeNums == localNum] <-
-            newNums[i]
+            newNums[i]+10000000
     }
 
     # And here, the rows of the reducedClusterCenters are reordered
-    reducedClusterCenters <- reducedClusterCenters[
+    reducedClusterCentersTemp <- reducedClusterCenters[
         order(as.numeric(row.names(reducedClusterCenters))),]
+    #Here, we once again risk loosing the data frame format.
+    if(is.numeric(reducedClusterCentersTemp)){
+        clusterCenterColNames <- colnames(reducedClusterCenters)
+        if(nrow(reducedClusterCenters) == 1){
+            reducedClusterCenters <-
+                as.data.frame(t(reducedClusterCentersTemp))
+        } else {
+            reducedClusterCenters <-
+                data.frame(reducedClusterCentersTemp)
+        }
+        colnames(reducedClusterCenters) <- clusterCenterColNames
+    } else {
+        reducedClusterCenters <- reducedClusterCentersTemp
+    }
 
+    #Here, the ridiculous cluster number names are removed
+    row.names(reducedClusterCenters) <-
+        as.numeric(row.names(reducedClusterCenters))-10000000
     # Here, the optPenalty information is
     # retrieved from the optimal sample size
     # run.

@@ -1,6 +1,6 @@
 Package: DepecheR
-Version: 1.21.2
-Date: 2024-06-14
+Version: 1.21.3
+Date: 2024-06-21
 Title: Determination of essential phenotypic elements of clusters in 
     high-dimensional entities 
 biocViews: Software,CellBasedAssays,Transcription,DifferentialExpression,

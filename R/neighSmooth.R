@@ -139,13 +139,22 @@ neighSmooth <- function(focusData, euclidSpaceData,
     groupVecClustList <- split(groupVec, kMeansClusters)
     rowNumList <- split(rowNumbers, kMeansClusters)
 
-    if (nrow(kMeansCenters) > 11) {
+    if(nrow(kMeansCenters) <= 11){
+        distCenters <- as.list(as.data.frame(
+            t(knnx.index(kMeansCenters, kMeansCenters, nrow(kMeansCenters)))
+        ))
+    } else if (nrow(kMeansCenters) > 11 &
+               nrow(kMeansCenters) < 100) {
         distCenters <- as.list(as.data.frame(
             t(knnx.index(kMeansCenters, kMeansCenters, 11))
         ))
     } else {
+        #Here, the situations where the data contains very much data is
+        #considered. Here, we consider neighbors in the ten percent
+        #of the clusters lying closest to the cluster in question
+        numClusts <- round(nrow(kMeansCenters)/10)
         distCenters <- as.list(as.data.frame(
-            t(knnx.index(kMeansCenters, kMeansCenters, nrow(kMeansCenters)))
+            t(knnx.index(kMeansCenters, kMeansCenters, numClusts))
         ))
     }
 
