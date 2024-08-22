@@ -81,6 +81,9 @@ neighSmooth <- function(focusData, euclidSpaceData,
     } else {
         focusDataIsVector <- FALSE
     }
+    if(is.matrix(focusData)){
+        focusData <- as.data.frame(focusData)
+    }
 
     if (is.vector(euclidSpaceData)) {
         euclidSpaceData <- data.frame(euclidSpaceData, euclidSpaceData)
